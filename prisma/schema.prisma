@@ -13,3 +13,70 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+enum Role {
+  ADMIN
+  STUDENT
+}
+
+enum ProgressState {
+  PENDING
+  PROGRESS
+  COMPLETED
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  name String
+  birthdate DateTime
+  email String @unique
+  password String
+  role Role @default(STUDENT)
+  deletedAt DateTime?
+  coursesProgress CourseProgress[]
+  lessonsProgress LessonProgress[]
+}
+
+model Course {
+  id Int @id @default(autoincrement())
+  title String @db.VarChar(255)
+  logo String @db.VarChar(255)
+  description String @db.Text
+  postDate DateTime
+  introVideo String @db.VarChar(255)
+  deletedAt DateTime?
+  coursesProgress CourseProgress[]
+  lessons Lesson[]
+}
+
+model CourseProgress {
+  id Int @id @default(autoincrement())
+  state ProgressState @default(PENDING)
+  approvedDate DateTime?
+  idUser Int
+  idCourse Int
+  deletedAt DateTime?
+  user User @relation(fields: [idUser], references: [id])
+  course Course @relation(fields: [idCourse], references: [id])
+}
+
+model Lesson {
+  id Int @id @default(autoincrement())
+  title String @db.VarChar(255)
+  description String @db.Text
+  video String @db.VarChar(255)
+  idCourse Int
+  deletedAt DateTime?
+  course Course @relation(fields: [idCourse], references: [id])
+  lessonsProgress LessonProgress[]
+}
+
+model LessonProgress {
+  id Int @id @default(autoincrement())
+  state ProgressState @default(PENDING)
+  idUser Int
+  idLesson Int
+  deletedAt DateTime?
+  user User @relation(fields: [idUser], references: [id])
+  lesson Lesson @relation(fields: [idLesson], references: [id])
+}
