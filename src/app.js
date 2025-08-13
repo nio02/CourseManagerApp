@@ -1,9 +1,13 @@
 import express from 'express'
+import { router } from './routes/index.js'
 
-const app = express()
+export const app = express()
 
-const PORT = process.env.PORT ?? 1234
+app.disable('x-powered-by')
+app.use(express.json())
 
-app.listen(PORT, () => {
-    console.log(`Server listening on port http://localhost:${PORT}`)
+app.use('/api', router)
+
+app.get('/', (req, res) => {
+    res.send('Hello World')
 })
