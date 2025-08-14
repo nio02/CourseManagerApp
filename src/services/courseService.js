@@ -1,10 +1,10 @@
 import { PrismaClient } from "../../generated/prisma/client.js"
+import { buildCourseFilters, buildCourseSelect, formatCoursesResponse, buildCourseFiltersUser, buildCourseSelectUser, formatCoursesResponseUser } from "../utils/courseQuerysUtils.js"
 
 const prisma = new PrismaClient()
 
 export class courseService {
     static async getCourses(queryParams){
-
         let {
             title = null,
             startDate = null,
@@ -19,72 +19,26 @@ export class courseService {
         const skip = (page - 1) * limit
 
         //Dynamic filter build
-
-        const where = {
-            deletedAt: null
-        }
-
-        if (title){
-            where.title = {
-                contains: title.toLowerCase()
-            }
-        }
-
-        if (startDate && endDate){
-            where.postDate = {
-                gte: new Date(startDate),
-                lte: new Date(endDate)
-            }
-        }
+        const whereClause = buildCourseFilters({ title, startDate, endDate })
+        const selectClause = buildCourseSelect();
 
         //Data
+        const courses = await prisma.course.findMany({
+            where: whereClause,
+            select: selectClause,
+            skip,
+            take: limit,
+            orderBy: { postDate: 'desc' }
+        })
 
-        const [courses, total] = await Promise.all([
-            prisma.course.findMany({
-                where,
-                select:{
-                    logo: true,
-                    title: true,
-                    postDate: true,
-                    introVideo: true,
-                    _count: {
-                        select: {lessons: true}
-                    }
-                },
-                skip,
-                take: limit,
-                orderBy: {
-                    postDate: 'desc'
-                }
-            }),
-            
-            prisma.course.count({
-                where: { deletedAt: null }
-            })
-        ])
+        const total = await prisma.course.count({
+            where: { deletedAt: null }
+        })
 
-        const formattedCourses = courses.map(course => ({
-            id: course.id,
-            logo: course.logo,
-            title: course.title,
-            postDate: course.postDate,
-            introVideo: course.introVideo,
-            totalLessons: course._count.lessons
-        }));
-
-        return {
-            data: formattedCourses,
-            pagination: {
-                total,
-                page,
-                limit,
-                totalPages: Math.ceil(total/limit)
-            }
-        }
+        return formatCoursesResponse(courses, total, page, limit)
     }
 
-    static async getUserCourses(queryParams, idUser){
-
+    static async getUserCourses(queryParams, user){
         let {
             title = null,
             startDate = null,
@@ -100,105 +54,55 @@ export class courseService {
         const skip = (page - 1) * limit
 
         //Dynamic filter build
-
-        const where = {
-            deletedAt: null
-        }
-
-        if (title){
-            where.title = {
-                contains: title.toLowerCase()
-            }
-        }
-
-        if (startDate && endDate){
-            where.postDate = {
-                gte: new Date(startDate),
-                lte: new Date(endDate)
-            }
-        }
-
-        if (progress){
-            where.coursesProgress = {
-                some: {
-                    idUser,
-                    state: progress,
-                    deletedAt: null
-                }
-            }
-        }
+        const whereClause = buildCourseFiltersUser({ title, startDate, endDate, progress }, user)
+        const selectClause = buildCourseSelectUser(user);
 
         //Data
+        const courses = await prisma.course.findMany({
+            where: whereClause,
+            select: selectClause,
+            skip,
+            take: limit,
+            orderBy: { postDate: 'desc' }
+        })
 
-        const [courses, total, lessonsCompleted] = await Promise.all([
-            prisma.course.findMany({
-                where,
-                select:{
-                    logo: true,
-                    title: true,
-                    postDate: true,
-                    introVideo: true,
-                    coursesProgress: {
-                        where: { deletedAt: null, idUser },
-                        take: 1,
-                        select: { state: true }
-                    },
-                    _count: {
-                        select: {lessons: true}
-                    }
-                },
-                skip,
-                take: limit,
-                orderBy: {
-                    postDate: 'desc'
+        const total = await prisma.course.count({
+            where: { deletedAt: null }
+        })
+
+        return formatCoursesResponseUser(courses, total, page, limit)
+    }
+
+    static async getCourseById(id){
+        const course = await prisma.course.findFirst({
+            where: { 
+                id: parseInt(id, 10),
+                deletedAt: null,
+                lessons: {
+                    where: { deletedAt: null }
                 }
-            }),
-            
-            prisma.course.count({
-                where: { deletedAt: null }
-            }),
+            },
+        })
 
-            prisma.course.count({
-                where: { 
-                    deletedAt: null,
-                    lessons: {
-                        some: {
-                            lessonsProgress: {
-                                some: {
-                                    idUser,
-                                    state: 'COMPLETED',
-                                    deletedAt: null
-                                }
-                            }
-                        }
-                    }
-                }
-            })
-        ])
-
-        const formattedCourses = courses.map(course => ({
-            id: course.id,
-            logo: course.logo,
-            title: course.title,
-            postDate: course.postDate,
-            introVideo: course.introVideo,
-            totalLessons: course._count.lessons,
-            courseProgress: course.coursesProgress[0],
-            completedLessons: lessonsCompleted
-        }));
-
-        return {
-            data: formattedCourses,
-            pagination: {
-                total,
-                page,
-                limit,
-                totalPages: Math.ceil(total/limit)
-            }
-        }
+        return course
     }
 
     static async createCourse(data){
-       
+        const newCourse = await prisma.course.create({ data })
+
+        return newCourse
+    }
+
+    static async updateCourse(id, data){
+        const updatedCourse = await prisma.course.update({
+            where: { id: parseInt(id, 10) },
+            data
+        })
+
+        if(!updatedCourse){
+            throw new Error('Course not found')
+        }
+
+        return updatedCourse
     }
 }
