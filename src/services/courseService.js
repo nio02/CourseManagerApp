@@ -88,7 +88,25 @@ export class courseService {
     }
 
     static async createCourse(data){
-        const newCourse = await prisma.course.create({ data })
+        if(!data.lessons || data.lessons.length < 1){
+            throw new Error('A course must have at leat one lesson')
+        }
+
+        const newCourse = await prisma.course.create({ 
+            data: {
+                title: data.title,
+                logo: data.logo,
+                description: data.description,
+                postDate: new Date(data.postDate),
+                introVideo: data.introVideo,
+                lessons: {
+                    create: data.lessons
+                }
+            },
+            include: {
+                lessons: true
+            }
+        })
 
         return newCourse
     }
@@ -97,6 +115,21 @@ export class courseService {
         const updatedCourse = await prisma.course.update({
             where: { id: parseInt(id, 10) },
             data
+        })
+
+        if(!updatedCourse){
+            throw new Error('Course not found')
+        }
+
+        return updatedCourse
+    }
+
+    static async deleteCourse(id){
+        const updatedCourse = await prisma.course.update({
+            where: { id: parseInt(id, 10) },
+            data: {
+                deletedAt: new Date()
+            }
         })
 
         if(!updatedCourse){

@@ -21,7 +21,7 @@ export function authorizeRole(...allowedRoles){
             return res.status(401).json({ error: 'Not authenticated'})
         } 
 
-        if(allowedRoles.includes(req.user.role)){
+        if(!allowedRoles.includes(req.user.role)){
             return res.status(403).json({ error: 'Access Denied, insufficient permissions'})
         }
 

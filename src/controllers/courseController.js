@@ -31,4 +31,13 @@ export class courseController {
             res.status(400).json({ error: e.message})
         }
     }
+
+    static async createNewCourse(req, res){
+        try {
+            const course = await courseService.createCourse(req.body)
+            return res.status(200).json(course)
+        } catch (e) {
+            res.status(400).json({ error: e.message})
+        }
+    }
 }
