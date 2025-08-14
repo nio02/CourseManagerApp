@@ -65,22 +65,42 @@ async function main() {
   // await prisma.lesson.createMany({ data: lessonsData });
 
   // 4️⃣ Crear progreso de cursos (para 5 combinaciones usuario-curso)
+  // const courseProgressData = [
+  //   { idUser: 2, idCourse: 1, state: ProgressState.COMPLETED, approvedDate: new Date() },
+  //   { idUser: 3, idCourse: 2, state: ProgressState.PROGRESS },
+  //   { idUser: 4, idCourse: 3, state: ProgressState.PENDING },
+  //   { idUser: 5, idCourse: 4, state: ProgressState.PROGRESS },
+  //   { idUser: 2, idCourse: 5, state: ProgressState.PENDING },
+  // ];
+  // await prisma.courseProgress.createMany({ data: courseProgressData });
+
+  // 5️⃣ Crear progreso de lecciones (5 registros)
+  // const lessonProgressData = [
+  //   { idUser: 2, idLesson: 1, state: ProgressState.COMPLETED },
+  //   { idUser: 3, idLesson: 2, state: ProgressState.PROGRESS },
+  //   { idUser: 4, idLesson: 3, state: ProgressState.PENDING },
+  //   { idUser: 5, idLesson: 4, state: ProgressState.COMPLETED },
+  //   { idUser: 2, idLesson: 5, state: ProgressState.PENDING },
+  // ];
+  // await prisma.lessonProgress.createMany({ data: lessonProgressData });
+
+  // 4️⃣ Crear progreso de cursos (para 5 combinaciones usuario-curso)
   const courseProgressData = [
-    { idUser: 2, idCourse: 1, state: ProgressState.COMPLETED, approvedDate: new Date() },
-    { idUser: 3, idCourse: 2, state: ProgressState.PROGRESS },
-    { idUser: 4, idCourse: 3, state: ProgressState.PENDING },
-    { idUser: 5, idCourse: 4, state: ProgressState.PROGRESS },
-    { idUser: 2, idCourse: 5, state: ProgressState.PENDING },
+    { idUser: 6, idCourse: 1, state: ProgressState.COMPLETED, approvedDate: new Date() },
+    { idUser: 6, idCourse: 2, state: ProgressState.PROGRESS },
+    { idUser: 6, idCourse: 3, state: ProgressState.PENDING },
+    { idUser: 7, idCourse: 4, state: ProgressState.PROGRESS },
+    { idUser: 7, idCourse: 5, state: ProgressState.PENDING },
   ];
   await prisma.courseProgress.createMany({ data: courseProgressData });
 
   // 5️⃣ Crear progreso de lecciones (5 registros)
   const lessonProgressData = [
-    { idUser: 2, idLesson: 1, state: ProgressState.COMPLETED },
-    { idUser: 3, idLesson: 2, state: ProgressState.PROGRESS },
-    { idUser: 4, idLesson: 3, state: ProgressState.PENDING },
-    { idUser: 5, idLesson: 4, state: ProgressState.COMPLETED },
-    { idUser: 2, idLesson: 5, state: ProgressState.PENDING },
+    { idUser: 6, idLesson: 1, state: ProgressState.COMPLETED },
+    { idUser: 6, idLesson: 2, state: ProgressState.PROGRESS },
+    { idUser: 6, idLesson: 3, state: ProgressState.PENDING },
+    { idUser: 7, idLesson: 4, state: ProgressState.COMPLETED },
+    { idUser: 7, idLesson: 5, state: ProgressState.PENDING },
   ];
   await prisma.lessonProgress.createMany({ data: lessonProgressData });
 

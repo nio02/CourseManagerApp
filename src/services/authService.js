@@ -4,41 +4,43 @@ import jwt from 'jsonwebtoken'
 
 const prisma = new PrismaClient()
 
-export const registerUser = async (name, birthdate, email, password) =>{
-    const hashedPassword = await bcrypt.hash(password, 10)
+export class authService {
+    static async registerUser(name, birthdate, email, password){
+        const hashedPassword = await bcrypt.hash(password, 10)
 
-    const newUser = await prisma.user.create({
-        data: {
-            name,
-            birthdate: new Date(birthdate),
-            email,
-            password: hashedPassword,
-            role: 'STUDENT'
-        }
-    })
+        const newUser = await prisma.user.create({
+            data: {
+                name,
+                birthdate: new Date(birthdate),
+                email,
+                password: hashedPassword,
+                role: 'STUDENT'
+            }
+        })
 
-    return newUser
-}
-
-export const loginUser = async (email, password) => {
-    const user = await prisma.user.findFirst({
-        where: {
-            email: email,
-            deletedAt: null
-        }
-    })
-
-    if(!user){
-        throw new Error('Inavalid email or password')
+        return newUser
     }
 
-    const validPassword = await bcrypt.compare(password, user.password)
+    static async loginUser(email, password){
+        const user = await prisma.user.findFirst({
+            where: {
+                email: email,
+                deletedAt: null
+            }
+        })
 
-    if(!validPassword){
-        throw new Error('Invalid email or password')
+        if(!user){
+            throw new Error('Inavalid email or password')
+        }
+
+        const validPassword = await bcrypt.compare(password, user.password)
+
+        if(!validPassword){
+            throw new Error('Invalid email or password')
+        }
+
+        const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '5h'})
+
+        return token
     }
-
-    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '5h'})
-
-    return token
 }
