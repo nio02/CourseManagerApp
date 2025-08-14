@@ -120,8 +120,11 @@ export class courseService {
 
         if (progress){
             where.coursesProgress = {
-                where: { idUser },
-                select: { state: true }
+                some: {
+                    idUser,
+                    state: progress,
+                    deletedAt: null
+                }
             }
         }
 
