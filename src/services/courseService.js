@@ -112,13 +112,47 @@ export class courseService {
     }
 
     static async updateCourse(id, data){
+        const courseExist = await prisma.course.findFirst({
+            where: {
+                id: parseInt(id, 10),
+                deletedAt: null
+            }
+        })
+
+        if (!courseExist){
+            throw new Error('Course not found')
+        }
+
         const updatedCourse = await prisma.course.update({
-            where: { id: parseInt(id, 10) },
-            data
+            where: { 
+                id: parseInt(id, 10),
+                deletedAt: null
+            },
+            data: {
+                title: data.title,
+                logo: data.logo,
+                description: data.description,
+                postDate: data.postDate,
+                introVideo: data.introVideo,
+                lessons: {
+                    update: data.lessons.map(lesson => ({
+                        where: { 
+                            id: lesson.id,
+                            deletedAt: null
+                        },
+                        data: {
+                            title: lesson.title,
+                            description: lesson.description,
+                            video: lesson.video
+                        }
+                    }))
+                }
+            },
+            include: { lessons: true }
         })
 
         if(!updatedCourse){
-            throw new Error('Course not found')
+            throw new Error('Error updating course')
         }
 
         return updatedCourse

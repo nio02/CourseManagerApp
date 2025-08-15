@@ -48,5 +48,14 @@ export class courseController {
         } catch (e) {
             res.status(400).json({ error: e.message})
         }
-    }    
+    }
+
+    static async updateCourse(req, res){
+        try {
+            const updatedCourse = await courseService.updateCourse(req.params.id, req.body)
+            return res.status(200).json(updatedCourse)
+        } catch (e) {
+            res.status(400).json({ error: e.message})
+        }
+    }
 }

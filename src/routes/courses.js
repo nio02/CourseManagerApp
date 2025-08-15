@@ -12,3 +12,5 @@ courseRouter.get('/:id/user', courseController.getCourseById)
 courseRouter.post('/create', authenticateToken, authorizeRole('ADMIN'), courseController.createNewCourse)
 
 courseRouter.delete('/delete/:id', authenticateToken, authorizeRole('ADMIN'), courseController.deleteCourse)
+
+courseRouter.put('/update/:id', authenticateToken, authorizeRole('ADMIN'), courseController.updateCourse)
