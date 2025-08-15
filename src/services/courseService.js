@@ -125,17 +125,34 @@ export class courseService {
     }
 
     static async deleteCourse(id){
+        const courseExist = await prisma.course.findFirst({
+            where: {
+                id: parseInt(id, 10),
+                deletedAt: null
+            }
+        })
+
+        if(!courseExist){
+            throw new Error('Course not found')
+        }
+
         const updatedCourse = await prisma.course.update({
-            where: { id: parseInt(id, 10) },
+            where: { 
+                id: parseInt(id, 10),
+                deletedAt: null,
+                coursesProgress: {
+                    none: {}
+                }
+            },
             data: {
                 deletedAt: new Date()
             }
         })
 
         if(!updatedCourse){
-            throw new Error('Course not found')
+            throw new Error('Course has progress related')
         }
 
-        return updatedCourse
+        return 'Course deleted succesfully'
     }
 }

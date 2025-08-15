@@ -40,4 +40,13 @@ export class courseController {
             res.status(400).json({ error: e.message})
         }
     }
+
+    static async deleteCourse(req, res){
+        try {
+            const deletedCourse = await courseService.deleteCourse(req.params.id)
+            return res.status(200).json(deletedCourse)
+        } catch (e) {
+            res.status(400).json({ error: e.message})
+        }
+    }    
 }

@@ -25,8 +25,30 @@ export class lessonService {
         return lesson
     }
 
-    static async createLesson(data){
-        const newLesson = await prisma.lesson.create({ data })
+    static async createLesson(idCourse, data){
+        if (!idCourse){
+            throw new Error('Course not found')
+        }
+
+        const validCourse = await prisma.course.findFirst({
+            where: { id: parseInt(idCourse, 10) }
+        })
+
+        if(!validCourse){
+            throw new Error('Course not found')
+        }
+
+        const newLesson = await prisma.lesson.create({ 
+            data: {
+                title: data.title,
+                description: data.description,
+                video: data.video,
+                course: {
+                    connect: { id: parseInt(idCourse, 10) }
+                }
+            }
+        })
+
         return newLesson
     }
 
@@ -46,12 +68,31 @@ export class lessonService {
     }
 
     static async deleteLesson(id){
-        const lessonDelete = await prisma.lesson.findFirst({ 
-            where: { id: parseInt(id, 10) }
+        const lessonExist = await prisma.lesson.findFirst({
+            where: {
+                id: parseInt(id, 10),
+                deletedAt: null
+            }
+        })
+
+        if(!lessonExist){
+            throw new Error('Lesson not found')
+        }
+
+        const lessonDelete = await prisma.lesson.update({ 
+            where: { 
+                id: parseInt(id, 10),
+                lessonsProgress: {
+                    none: {}
+                }
+            },
+            data: {
+                deletedAt: new Date()
+            }
         })
 
         if(!lessonDelete){
-            throw new Error('Lesson not found')
+            throw new Error('Lesson has progress related')
         }
 
         return "Lesson deleted succesfully"
