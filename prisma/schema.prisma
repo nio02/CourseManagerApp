@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -12,6 +6,70 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int              @id @default(autoincrement())
+  name            String
+  birthdate       DateTime
+  email           String           @unique
+  password        String
+  role            Role             @default(STUDENT)
+  deletedAt       DateTime?
+  coursesProgress CourseProgress[]
+  lessonsProgress LessonProgress[]
+}
+
+model Course {
+  id              Int              @id @default(autoincrement())
+  title           String           @db.VarChar(255)
+  logo            String           @db.VarChar(255)
+  description     String           @db.Text
+  postDate        DateTime
+  introVideo      String           @db.VarChar(255)
+  deletedAt       DateTime?
+  coursesProgress CourseProgress[]
+  lessons         Lesson[]
+}
+
+model CourseProgress {
+  id           Int           @id @default(autoincrement())
+  state        ProgressState @default(PENDING)
+  approvedDate DateTime?
+  idUser       Int
+  idCourse     Int
+  deletedAt    DateTime?
+  course       Course        @relation(fields: [idCourse], references: [id])
+  user         User          @relation(fields: [idUser], references: [id])
+
+  @@index([idCourse], map: "CourseProgress_idCourse_fkey")
+  @@index([idUser], map: "CourseProgress_idUser_fkey")
+}
+
+model Lesson {
+  id              Int              @id @default(autoincrement())
+  title           String           @db.VarChar(255)
+  description     String           @db.Text
+  video           String           @db.VarChar(255)
+  idCourse        Int
+  deletedAt       DateTime?
+  course          Course           @relation(fields: [idCourse], references: [id])
+  lessonsProgress LessonProgress[]
+
+  @@index([idCourse], map: "Lesson_idCourse_fkey")
+}
+
+model LessonProgress {
+  id        Int           @id @default(autoincrement())
+  state     ProgressState @default(PENDING)
+  idUser    Int
+  idLesson  Int
+  deletedAt DateTime?
+  lesson    Lesson        @relation(fields: [idLesson], references: [id])
+  user      User          @relation(fields: [idUser], references: [id])
+
+  @@index([idLesson], map: "LessonProgress_idLesson_fkey")
+  @@index([idUser], map: "LessonProgress_idUser_fkey")
 }
 
 enum Role {
@@ -23,60 +81,4 @@ enum ProgressState {
   PENDING
   PROGRESS
   COMPLETED
-}
-
-model User {
-  id Int @id @default(autoincrement())
-  name String
-  birthdate DateTime
-  email String @unique
-  password String
-  role Role @default(STUDENT)
-  deletedAt DateTime?
-  coursesProgress CourseProgress[]
-  lessonsProgress LessonProgress[]
-}
-
-model Course {
-  id Int @id @default(autoincrement())
-  title String @db.VarChar(255)
-  logo String @db.VarChar(255)
-  description String @db.Text
-  postDate DateTime
-  introVideo String @db.VarChar(255)
-  deletedAt DateTime?
-  coursesProgress CourseProgress[]
-  lessons Lesson[]
-}
-
-model CourseProgress {
-  id Int @id @default(autoincrement())
-  state ProgressState @default(PENDING)
-  approvedDate DateTime?
-  idUser Int
-  idCourse Int
-  deletedAt DateTime?
-  user User @relation(fields: [idUser], references: [id])
-  course Course @relation(fields: [idCourse], references: [id])
-}
-
-model Lesson {
-  id Int @id @default(autoincrement())
-  title String @db.VarChar(255)
-  description String @db.Text
-  video String @db.VarChar(255)
-  idCourse Int
-  deletedAt DateTime?
-  course Course @relation(fields: [idCourse], references: [id])
-  lessonsProgress LessonProgress[]
-}
-
-model LessonProgress {
-  id Int @id @default(autoincrement())
-  state ProgressState @default(PENDING)
-  idUser Int
-  idLesson Int
-  deletedAt DateTime?
-  user User @relation(fields: [idUser], references: [id])
-  lesson Lesson @relation(fields: [idLesson], references: [id])
 }

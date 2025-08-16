@@ -84,27 +84,173 @@ async function main() {
   // ];
   // await prisma.lessonProgress.createMany({ data: lessonProgressData });
 
-  // 4️⃣ Crear progreso de cursos (para 5 combinaciones usuario-curso)
+  // // 4️⃣ Crear progreso de cursos (para 5 combinaciones usuario-curso)
+  // const courseProgressData = [
+  //   { idUser: 6, idCourse: 1, state: ProgressState.COMPLETED, approvedDate: new Date() },
+  //   { idUser: 6, idCourse: 2, state: ProgressState.PROGRESS },
+  //   { idUser: 6, idCourse: 3, state: ProgressState.PENDING },
+  //   { idUser: 7, idCourse: 4, state: ProgressState.PROGRESS },
+  //   { idUser: 7, idCourse: 5, state: ProgressState.PENDING },
+  // ];
+  // await prisma.courseProgress.createMany({ data: courseProgressData });
+
+  // // 5️⃣ Crear progreso de lecciones (5 registros)
+  // const lessonProgressData = [
+  //   { idUser: 6, idLesson: 1, state: ProgressState.COMPLETED },
+  //   { idUser: 6, idLesson: 2, state: ProgressState.PROGRESS },
+  //   { idUser: 6, idLesson: 3, state: ProgressState.PENDING },
+  //   { idUser: 7, idLesson: 4, state: ProgressState.COMPLETED },
+  //   { idUser: 7, idLesson: 5, state: ProgressState.PENDING },
+  // ];
+  // await prisma.lessonProgress.createMany({ data: lessonProgressData });
+
+  // console.log('✅ Seed completado con éxito');
+
+    // 4️⃣ Crear progreso de cursos (coherente con usuarios 2 al 7)
+  // const courseProgressData = [
+  //   { idUser: 2, idCourse: 1, state: ProgressState.COMPLETED, approvedDate: new Date() },
+  //   { idUser: 2, idCourse: 2, state: ProgressState.PROGRESS },
+  //   { idUser: 3, idCourse: 1, state: ProgressState.PENDING },
+  //   { idUser: 3, idCourse: 3, state: ProgressState.PROGRESS },
+  //   { idUser: 4, idCourse: 2, state: ProgressState.COMPLETED, approvedDate: new Date() },
+  //   { idUser: 4, idCourse: 4, state: ProgressState.PENDING },
+  //   { idUser: 5, idCourse: 3, state: ProgressState.PROGRESS },
+  //   { idUser: 5, idCourse: 5, state: ProgressState.PENDING },
+  //   { idUser: 6, idCourse: 4, state: ProgressState.COMPLETED, approvedDate: new Date() },
+  //   { idUser: 6, idCourse: 5, state: ProgressState.PENDING },
+  //   { idUser: 7, idCourse: 1, state: ProgressState.PENDING },
+  //   { idUser: 7, idCourse: 2, state: ProgressState.PROGRESS },
+  // ];
+
+  // await prisma.courseProgress.createMany({ data: courseProgressData });
+
+  // // 5️⃣ Crear progreso de lecciones (coherente con cada curso)
+  // const lessonProgressData = [
+  //   // Usuario 2 - Curso 1 (COMPLETED)
+  //   { idUser: 2, idLesson: 1, state: ProgressState.COMPLETED },
+  //   { idUser: 2, idLesson: 2, state: ProgressState.COMPLETED },
+  //   // Usuario 2 - Curso 2 (PROGRESS)
+  //   { idUser: 2, idLesson: 3, state: ProgressState.COMPLETED },
+  //   { idUser: 2, idLesson: 4, state: ProgressState.PROGRESS },
+
+  //   // Usuario 3 - Curso 1 (PENDING)
+  //   { idUser: 3, idLesson: 1, state: ProgressState.PENDING },
+  //   { idUser: 3, idLesson: 2, state: ProgressState.PENDING },
+  //   // Usuario 3 - Curso 3 (PROGRESS)
+  //   { idUser: 3, idLesson: 5, state: ProgressState.PROGRESS },
+  //   { idUser: 3, idLesson: 6, state: ProgressState.PENDING },
+
+  //   // Usuario 4 - Curso 2 (COMPLETED)
+  //   { idUser: 4, idLesson: 3, state: ProgressState.COMPLETED },
+  //   { idUser: 4, idLesson: 4, state: ProgressState.COMPLETED },
+  //   // Usuario 4 - Curso 4 (PENDING)
+  //   { idUser: 4, idLesson: 7, state: ProgressState.PENDING },
+  //   { idUser: 4, idLesson: 8, state: ProgressState.PENDING },
+
+  //   // Usuario 5 - Curso 3 (PROGRESS)
+  //   { idUser: 5, idLesson: 5, state: ProgressState.COMPLETED },
+  //   { idUser: 5, idLesson: 6, state: ProgressState.PROGRESS },
+  //   // Usuario 5 - Curso 5 (PENDING)
+  //   { idUser: 5, idLesson: 9, state: ProgressState.PENDING },
+  //   { idUser: 5, idLesson: 10, state: ProgressState.PENDING },
+
+  //   // Usuario 6 - Curso 4 (COMPLETED)
+  //   { idUser: 6, idLesson: 7, state: ProgressState.COMPLETED },
+  //   { idUser: 6, idLesson: 8, state: ProgressState.COMPLETED },
+  //   // Usuario 6 - Curso 5 (PENDING)
+  //   { idUser: 6, idLesson: 9, state: ProgressState.PENDING },
+  //   { idUser: 6, idLesson: 10, state: ProgressState.PENDING },
+
+  //   // Usuario 7 - Curso 1 (PENDING)
+  //   { idUser: 7, idLesson: 1, state: ProgressState.PENDING },
+  //   { idUser: 7, idLesson: 2, state: ProgressState.PENDING },
+  //   // Usuario 7 - Curso 2 (PROGRESS)
+  //   { idUser: 7, idLesson: 3, state: ProgressState.COMPLETED },
+  //   { idUser: 7, idLesson: 4, state: ProgressState.PROGRESS },
+  // ];
+
+  // await prisma.lessonProgress.createMany({ data: lessonProgressData });
+
+  // console.log('✅ Seed completado con éxito (coherente con cursos y lecciones)');
+
+
   const courseProgressData = [
-    { idUser: 6, idCourse: 1, state: ProgressState.COMPLETED, approvedDate: new Date() },
-    { idUser: 6, idCourse: 2, state: ProgressState.PROGRESS },
-    { idUser: 6, idCourse: 3, state: ProgressState.PENDING },
-    { idUser: 7, idCourse: 4, state: ProgressState.PROGRESS },
-    { idUser: 7, idCourse: 5, state: ProgressState.PENDING },
-  ];
-  await prisma.courseProgress.createMany({ data: courseProgressData });
+  { idUser: 2, idCourse: 1, state: ProgressState.COMPLETED, approvedDate: new Date() },
+  { idUser: 2, idCourse: 2, state: ProgressState.PROGRESS },
+  { idUser: 3, idCourse: 1, state: ProgressState.PENDING },
+  { idUser: 3, idCourse: 3, state: ProgressState.PROGRESS },
+  { idUser: 4, idCourse: 2, state: ProgressState.COMPLETED, approvedDate: new Date() },
+  { idUser: 4, idCourse: 4, state: ProgressState.PENDING },
+  { idUser: 5, idCourse: 3, state: ProgressState.PROGRESS },
+  { idUser: 5, idCourse: 5, state: ProgressState.PENDING },
+  { idUser: 6, idCourse: 4, state: ProgressState.COMPLETED, approvedDate: new Date() },
+  { idUser: 6, idCourse: 5, state: ProgressState.PENDING },
+  { idUser: 7, idCourse: 1, state: ProgressState.PENDING },
+  { idUser: 7, idCourse: 2, state: ProgressState.PROGRESS },
+];
 
-  // 5️⃣ Crear progreso de lecciones (5 registros)
-  const lessonProgressData = [
-    { idUser: 6, idLesson: 1, state: ProgressState.COMPLETED },
-    { idUser: 6, idLesson: 2, state: ProgressState.PROGRESS },
-    { idUser: 6, idLesson: 3, state: ProgressState.PENDING },
-    { idUser: 7, idLesson: 4, state: ProgressState.COMPLETED },
-    { idUser: 7, idLesson: 5, state: ProgressState.PENDING },
-  ];
-  await prisma.lessonProgress.createMany({ data: lessonProgressData });
+await prisma.courseProgress.createMany({ data: courseProgressData });
 
-  console.log('✅ Seed completado con éxito');
+// 5️⃣ Crear progreso de lecciones (coherente con cada curso)
+const lessonProgressData = [
+  // Usuario 2 - Curso 1 (COMPLETED)
+  { idUser: 2, idLesson: 1, state: ProgressState.COMPLETED },
+  { idUser: 2, idLesson: 2, state: ProgressState.COMPLETED },
+  { idUser: 2, idLesson: 3, state: ProgressState.COMPLETED },
+  // Usuario 2 - Curso 2 (PROGRESS)
+  { idUser: 2, idLesson: 4, state: ProgressState.COMPLETED },
+  { idUser: 2, idLesson: 5, state: ProgressState.PROGRESS },
+  { idUser: 2, idLesson: 6, state: ProgressState.PENDING },
+
+  // Usuario 3 - Curso 1 (PENDING)
+  { idUser: 3, idLesson: 1, state: ProgressState.PENDING },
+  { idUser: 3, idLesson: 2, state: ProgressState.PENDING },
+  { idUser: 3, idLesson: 3, state: ProgressState.PENDING },
+  // Usuario 3 - Curso 3 (PROGRESS)
+  { idUser: 3, idLesson: 7, state: ProgressState.COMPLETED },
+  { idUser: 3, idLesson: 8, state: ProgressState.PROGRESS },
+  { idUser: 3, idLesson: 9, state: ProgressState.PENDING },
+
+  // Usuario 4 - Curso 2 (COMPLETED)
+  { idUser: 4, idLesson: 4, state: ProgressState.COMPLETED },
+  { idUser: 4, idLesson: 5, state: ProgressState.COMPLETED },
+  { idUser: 4, idLesson: 6, state: ProgressState.COMPLETED },
+  // Usuario 4 - Curso 4 (PENDING)
+  { idUser: 4, idLesson: 10, state: ProgressState.PENDING },
+  { idUser: 4, idLesson: 11, state: ProgressState.PENDING },
+  { idUser: 4, idLesson: 12, state: ProgressState.PENDING },
+
+  // Usuario 5 - Curso 3 (PROGRESS)
+  { idUser: 5, idLesson: 7, state: ProgressState.COMPLETED },
+  { idUser: 5, idLesson: 8, state: ProgressState.PROGRESS },
+  { idUser: 5, idLesson: 9, state: ProgressState.PENDING },
+  // Usuario 5 - Curso 5 (PENDING)
+  { idUser: 5, idLesson: 13, state: ProgressState.PENDING },
+  { idUser: 5, idLesson: 14, state: ProgressState.PENDING },
+  { idUser: 5, idLesson: 15, state: ProgressState.PENDING },
+
+  // Usuario 6 - Curso 4 (COMPLETED)
+  { idUser: 6, idLesson: 10, state: ProgressState.COMPLETED },
+  { idUser: 6, idLesson: 11, state: ProgressState.COMPLETED },
+  { idUser: 6, idLesson: 12, state: ProgressState.COMPLETED },
+  // Usuario 6 - Curso 5 (PENDING)
+  { idUser: 6, idLesson: 13, state: ProgressState.PENDING },
+  { idUser: 6, idLesson: 14, state: ProgressState.PENDING },
+  { idUser: 6, idLesson: 15, state: ProgressState.PENDING },
+
+  // Usuario 7 - Curso 1 (PENDING)
+  { idUser: 7, idLesson: 1, state: ProgressState.PENDING },
+  { idUser: 7, idLesson: 2, state: ProgressState.PENDING },
+  { idUser: 7, idLesson: 3, state: ProgressState.PENDING },
+  // Usuario 7 - Curso 2 (PROGRESS)
+  { idUser: 7, idLesson: 4, state: ProgressState.COMPLETED },
+  { idUser: 7, idLesson: 5, state: ProgressState.PROGRESS },
+  { idUser: 7, idLesson: 6, state: ProgressState.PENDING },
+];
+
+await prisma.lessonProgress.createMany({ data: lessonProgressData });
+
+console.log('✅ Seed completado con éxito (coherente con cursos y lecciones)');
 }
 
 main()
