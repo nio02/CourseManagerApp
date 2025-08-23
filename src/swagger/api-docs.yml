@@ -1,0 +1,578 @@
+openapi: 3.0.0
+
+info:
+  title: CursosAPP API
+  version: 1.0.0
+  description: Basic documentation for the "CursosAPP" API. This is an API developed for exploring and managing courses. It allows you to view and modify the courses and the lesson within them and understand user's progress.
+
+servers:
+  - url: http://localhost:1234
+    description: Local Server
+  - url: https://coursemanagerapp-production.up.railway.app
+    description: Deployed Server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerformat: JWT
+  
+  schemas:
+    Course:
+      type: object
+      properties:
+        logo:
+          type: string
+          example: logo-python.png
+        title:
+          type: string
+          example: Curso de Programación en Python
+        postDate:
+          type: string
+          format: date-time
+          example: 2025-08-15T00:00:00.000Z
+        introVideo:
+          type: string
+          example: https://youtu.be/diseno-grafico
+        totalLessons:
+          type: integer
+          example: 3
+    
+    CourseProgress:
+      type: object
+      properties:
+        state:
+          type: string
+          enum: [COMPLETED, PROGRESS]
+          example: COMPLETED
+
+    CourseWithProgress:
+      allOf:
+        - $ref: '#/components/schemas/Course'
+        - type: object
+          properties:
+            completedLessons:
+              type: integer
+              example: 2
+            courseProgress:
+              $ref: '#/components/schemas/CourseProgress'
+
+    lesson:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 9
+        title:
+          type: string
+          example: "Nuevos Conceptos básicos de identidad visual"
+        description:
+          type: string
+          example: "En esta lección veremos los NUEVOS conceptos básicos del diseño gráfico, incluyendo elementos visuales y principios de composición."
+        video:
+          type: string
+          format: uri
+          example: "https://youtu.be/nueva-introduccion-diseno-grafico"
+        idCourse:
+          type: integer
+          example: 9
+        deletedAt:
+          type: string
+          nullable: true
+          example: null
+
+    lessonRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Composición y jerarquía visual
+        description: 
+          type: string
+          example: Descubre cómo organizar elementos en tus diseños para guiar la atención y crear equilibrio visual.
+        vide:
+          type: string
+          example: https://youtu.be/composicion-jerarquia-visual
+
+    CourseDetails:
+      allOf:
+        - $ref: '#/components/schemas/Course'
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 9
+            deletedAt:
+              type: string
+              nullable: true
+              example: null
+            lessons:
+              type: array
+              items:
+               $ref: '#/components/schemas/lesson'
+
+    Pagination:
+      type: object
+      properties:
+        total:
+          type: integer
+          example: 6
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 3
+        totalPages:
+          type: integer
+          example: 2
+
+    CoursesResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Course'
+        Pagination:
+          $ref: '#/components/schemas/Pagination'
+    
+    CoursesWithProgressResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseWithProgress'
+        Pagination:
+          $ref: '#/components/schemas/Pagination'
+    
+    CreateCourseRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Curso de Diseño de Identidad Visual"
+        description:
+          type: string
+          example: "Este es el nuevo curso de identidad visual"
+        introVideo:
+          type: string
+          format: uri
+          example: "https://youtu.be/nuevo-identidad-visual"
+        lessons:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                example: 9
+              title:
+                type: string
+                example: "Nuevos Conceptos básicos de identidad visual"
+              description:
+                type: string
+                example: "En esta lección veremos los NUEVOS conceptos básicos del diseño gráfico, incluyendo elementos visuales y principios de composición."
+              video:
+                type: string
+                format: uri
+                example: "https://youtu.be/nueva-introduccion-diseno-grafico"
+    
+    RegisterUserRequest:
+      type: object
+      required:
+        - name
+        - birthdate
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          example: "Ana Martínez"
+        birthdate:
+          type: string
+          format: date
+          example: "1997-04-18"
+        email:
+          type: string
+          format: email
+          example: "ana.martinez@hola.com"
+        password:
+          type: string
+          format: password
+          example: "ana123"
+
+security:
+ - bearerAuth: []
+
+tags:
+  - name: Courses
+    description: Everything about the courses and it's management
+  - name: Lessons
+    description: Everything about the individual lesson management
+  - name: Authentication
+    description: Routes for user authentication
+
+paths:
+  /api/courses:
+    get:
+      tags:
+        - Courses
+      summary: Returns the available courses
+      description: Get a paginated list of available courses
+      security: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Current page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 3
+          description: Current limit for current number of courses in a page
+        - in: query
+          name: title
+          schema:
+            type: string
+            example: diseño
+          description: Word contained in a course title
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date
+            example: 2027-01-01
+          description: Initial date in a range of dates for courses publications
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date
+            example: 2028-01-01
+          description: Final date in a range of dates for courses publications
+      responses:
+        '200':
+          description: Successful response with courses and pagination
+          content:
+            application/json:
+              schema:
+                $ref: '$/components/schemas/CoursesResponse'
+              example:
+                data:
+                  - logo: "logo-diseno-grafico.png"
+                    title: "Curso de Diseño Gráfico"
+                    postDate: "2025-08-15T00:00:00.000Z"
+                    introVideo: "https://youtu.be/diseno-grafico"
+                    totalLessons: 1
+                  - logo: "logo-python.png"
+                    title: "Curso de Programación en Python"
+                    postDate: "2025-08-15T00:00:00.000Z"
+                    introVideo: "https://youtu.be/python-intro"
+                    totalLessons: 3
+                  - logo: "logo-marketing-digital.png"
+                    title: "Curso de Marketing Digital"
+                    postDate: "2025-08-15T00:00:00.000Z"
+                    introVideo: "https://youtu.be/marketing-digital-intro"
+                    totalLessons: 3
+                pagination:
+                  total: 6
+                  page: 1
+                  limit: 3
+                  totalPages: 2
+  /api/courses/user:
+    get:
+      tags:
+        - Courses
+      summary: Exactly the same as '/api/courses' but with additional user information
+      description: Adds user's information for the courses response. Every single query string works in this endpoint.
+      responses:
+        '200':
+          description: Successful response with courses and pagination with additional user's information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoursesWithProgressResponse'
+              example:
+                data:
+                  - logo: "logo-diseno-grafico.png"
+                    title: "Curso de Diseño Gráfico"
+                    postDate: "2025-08-15T00:00:00.000Z"
+                    introVideo: "https://youtu.be/diseno-grafico"
+                    totalLessons: 1
+                    completedLessons: 1
+                    courseProgress:
+                      state: "COMPLETED"
+                  - logo: "logo-python.png"
+                    title: "Curso de Programación en Python"
+                    postDate: "2025-08-15T00:00:00.000Z"
+                    introVideo: "https://youtu.be/python-intro"
+                    totalLessons: 3
+                    completedLessons: 3
+                    courseProgress:
+                      state: "PROGRESS"
+                  - logo: "logo-marketing-digital.png"
+                    title: "Curso de Marketing Digital"
+                    postDate: "2025-08-15T00:00:00.000Z"
+                    introVideo: "https://youtu.be/marketing-digital-intro"
+                    totalLessons: 3
+                    completedLessons: 0
+                pagination:
+                  total: 6
+                  page: 1
+                  limit: 3
+                  totalPages: 2
+  
+  /api/courses/create:
+    post:
+      tags:
+        - Courses
+      summary: Creates a new course
+      description: Creates a new course with its details and lessons included. Only available for users with ADMIN role. It is possible to create a course with no lessons by defining "lessons" as an empty array.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Curso de Diseño Gráfico"
+                logo:
+                  type: string
+                  example: "logo-diseno-grafico.png"
+                description:
+                  type: string
+                  example: "Aprende los fundamentos y técnicas del diseño gráfico, desde teoría del color hasta composición visual."
+                postDate:
+                  type: string
+                  format: date
+                  example: "2025-08-15"
+                introVideo:
+                  type: string
+                  format: uri
+                  example: "https://youtu.be/diseno-grafico"
+                lessons:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      title:
+                        type: string
+                        example: "Introducción al diseño gráfico"
+                      description:
+                        type: string
+                        example: "En esta lección veremos los conceptos básicos del diseño gráfico, incluyendo elementos visuales y principios de composición."
+                      video:
+                        type: string
+                        format: uri
+                        example: "https://youtu.be/introduccion-diseno-grafico"
+            example:
+              title: "Curso de Diseño Gráfico"
+              logo: "logo-diseno-grafico.png"
+              description: "Aprende los fundamentos y técnicas del diseño gráfico, desde teoría del color hasta composición visual."
+              postDate: "2025-08-15"
+              introVideo: "https://youtu.be/diseno-grafico"
+              lessons:
+                - title: "Introducción al diseño gráfico"
+                  description: "En esta lección veremos los conceptos básicos del diseño gráfico, incluyendo elementos visuales y principios de composición."
+                  video: "https://youtu.be/introduccion-diseno-grafico"
+      responses:
+        '201':
+          description: Course created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseDetails'
+              example:
+                id: 9
+                title: "Curso de Diseño de Identidad Visual"
+                logo: "logo-identidad-visual.png"
+                description: "Este es el nuevo curso de identidad visual"
+                postDate: "2025-08-15T00:00:00.000Z"
+                introVideo: "https://youtu.be/nuevo-identidad-visual"
+                deletedAt: null
+                lessons:
+                  - id: 9
+                    title: "Nuevos Conceptos básicos de identidad visual"
+                    description: "En esta lección veremos los NUEVOS conceptos básicos del diseño gráfico, incluyendo elementos visuales y principios de composición."
+                    video: "https://youtu.be/nueva-introduccion-diseno-grafico"
+                    idCourse: 9
+                    deletedAt: null
+  
+  /api/courses/update/{id}:
+    put:
+      tags:
+        - Courses
+      summary: Updates information of a course by its id.
+      description: Get a course by its ID and takes the data provided in the request body. In order to update the lesson, its id must be provided in the request body. Only available for users with ADMIN role.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: 9
+          description: The ID of the course.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCourseRequest'
+      responses:
+        '201':
+          description: Course updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseDetails'
+              example:
+                id: 9
+                title: "Curso de Diseño de Identidad Visual"
+                logo: "logo-identidad-visual.png"
+                description: "Este es el nuevo curso de identidad visual"
+                postDate: "2025-08-15T00:00:00.000Z"
+                introVideo: "https://youtu.be/nuevo-identidad-visual"
+                deletedAt: null
+                lessons:
+                  - id: 9
+                    title: "Nuevos Conceptos básicos de identidad visual"
+                    description: "En esta lección veremos los NUEVOS conceptos básicos del diseño gráfico, incluyendo elementos visuales y principios de composición."
+                    video: "https://youtu.be/nueva-introduccion-diseno-grafico"
+                    idCourse: 9
+                    deletedAt: null
+  
+  /api/courses/delete/{id}:
+    delete:
+      tags:
+        - Courses
+      summary: Deletes a course based on its unique id.
+      description: Deletes a course by ID. Only available for users with ADMIN role.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the course to be deleted
+      responses:
+        '200':
+          description: Successful response
+          content:
+            text/pain:
+              schema:
+                type: string
+                example: 'Course deleted succesfully'
+
+  /api/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user.
+      description: Creates a new user.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterUserRequest'
+      responses:
+        '200':
+          description: User registered succesfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User registered successfully
+  
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login a existing user.
+      description: Login a user providing a unique token.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: ana.martinez@hola.com
+                password:
+                  type: string
+                  example: ana123
+      responses:
+        '200':
+          description: User successfully logged
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "Unique_token"
+
+  /api/lessons/add/course/{id}:
+    post:
+      tags:
+      - Lessons
+      summary: Creates an individual lesson that corresponds to a course by its ID.
+      description: Creates a lesson that corresponds to a course by its ID. Only available for users with ADMIN role.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the course wich the new lesson corresponds.
+      requestBody:
+        required: true
+        content:
+          application/json:
+              schema:
+                $ref: '#/components/schemas/lessonRequest'
+      responses:
+        '201':
+          description: Lesson successfully added to a course
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/lesson'
+
+  /api/lessons/delete/{id}:
+    delete:
+      tags:
+        - Lessons
+      summary: Deletes a lesson by its ID.
+      description: Deletes a lesson by its unique ID. Only available for users with ADMIN role.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the lesson to be deleted.
+      responses:
+        '201':
+          description: Lesson successfully added to a course
+          content:
+            text/pain:
+              schema:
+                type: string
+                example: 'Lesson deleted successfully'
