@@ -55,6 +55,6 @@ It's purpose is **user authentication**, as well as **management of courses and 
 
 The following image shows an example of the documented API endpoints. Don´t forget to check out the [documentation](https://coursemanagerapp-production.up.railway.app/api-docs/) of this project.
 
-![Courses Overview](https://console.cloudinary.com/app/c-3ed1cd4658e6a73165000b7b18229e/assets/media_library/folders/home/asset/8d5f7bdafa691d93be5829e9923bc273/manage/summary?view_mode=mosaic&context=manage)
-![Lessons Overview](https://console.cloudinary.com/app/c-3ed1cd4658e6a73165000b7b18229e/assets/media_library/folders/home/asset/938850aaa6c5d20b8ec5aeb59b931f5d/manage/summary?view_mode=mosaic&context=manage)
-![Auth Overview](https://console.cloudinary.com/app/c-3ed1cd4658e6a73165000b7b18229e/assets/media_library/folders/home/asset/978e115016c0e196167b15b800bc5e1c/manage/summary?view_mode=mosaic&context=manage)
+![Courses Overview](https://res.cloudinary.com/donrhclb6/image/upload/v1755907023/Courses_szz8vo.png)
+![Lessons Overview](https://res.cloudinary.com/donrhclb6/image/upload/v1755907044/Lessons_flip21.png)
+![Auth Overview](https://res.cloudinary.com/donrhclb6/image/upload/v1755907023/Auth_h9buue.png)
